@@ -10,6 +10,8 @@ const server = express();
 server.use(express.json());
 
 // global middlewares and the user's router need to be connected here
+
+// everything that falls thru /api/users uses the usersRouter var
 server.use('/api/users', usersRouter);
 server.use(morgan('dev'));
 server.use(helmet());
