@@ -48,12 +48,24 @@ async function validateUserId(req, res, next) {
 
 function validateUser(req, res, next) {
   // DO YOUR MAGIC
-  console.log('validateUser middleware')
-  next()
+  // validates the `body` on a request to create or update a user
+  //- if the request `body` lacks the required `name` field, respond with status `400` and `{ message: "missing required name field" }`
+  // needs a name var that calls from req.body, then do logic using if/else if name is not there
+  // then bring into your user-router
+  const { name } = req.body
+  if(!name) {
+    res.status(400).json({
+      message: 'missing required name field',
+    })
+  } else {
+    next()
+  }
 }
 
 function validatePost(req, res, next) {
   // DO YOUR MAGIC
+  // validates the `body` on a request to create a new post
+  // - if the request `body` lacks the required `text` field, respond with status `400` and `{ message: "missing required text field" }`
   console.log('validatePost middleware')
   next()
 }
