@@ -27,9 +27,8 @@ async function validateUserId(req, res, next) {
       if(!user) {
         // do this 
         // if id does not match
-        res.status(404).json({
-          message: 'user not found',
-        })
+        res.status(404).json({ message: 'user not found',})
+        // next({ status: 404, message: 'user not found' })
       } else {
         // do this 
         // storing the valid id with req.user

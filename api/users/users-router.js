@@ -32,20 +32,14 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/:id', validateUserId, async (req, res, next) => {
+router.get('/:id', validateUserId, (req, res) => {
   // RETURN THE USER OBJECT
   // this needs a middleware to verify user id
   // console.log(req.user)
-  // res.json(req.user)
-  try {
-   const result = await User.getUserPosts(req.params.id)
-   res.json(result)
-  } catch (err) {
-    next(err)
-  }
+  res.json(req.user)
 });
 
-router.post('/', validateUser, validatePost, (req, res, next) => {
+router.post('/', validateUser, (req, res, next) => {
   // RETURN THE NEWLY CREATED USER OBJECT
   // this needs a middleware to check that the request body is valid
   // this is the insert() that adds an object to the db & returns it
