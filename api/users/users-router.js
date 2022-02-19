@@ -3,6 +3,7 @@ const express = require('express');
 const {
   validateUserId,
   validateUser,
+  validatePost,
 } = require('../middleware/middleware')
 
 // You will need `users-model.js` and `posts-model.js` both
@@ -33,12 +34,20 @@ router.get('/', (req, res) => {
 router.get('/:id', validateUserId, (req, res) => {
   // RETURN THE USER OBJECT
   // this needs a middleware to verify user id
-  console.log(req.user)
+  // console.log(req.user)
+  res.json(req.user)
 });
 
-router.post('/', validateUser, (req, res) => {
+router.post('/', validateUser, validatePost, (req, res, next) => {
   // RETURN THE NEWLY CREATED USER OBJECT
   // this needs a middleware to check that the request body is valid
+  // this is the insert() that adds an object to the db & returns it
+  // console.log(req.name)
+  Users.insert({ name: req.name })
+    .then(newUser => {
+      res.status(201).json(newUser)
+    })
+    .catch(next)
 });
 
 router.put('/:id', validateUserId, validateUser, (req, res) => {
@@ -46,6 +55,7 @@ router.put('/:id', validateUserId, validateUser, (req, res) => {
   // this needs a middleware to verify user id
   // and another middleware to check that the request body is valid
   console.log(req.user)
+  console.log(req.name)
 });
 
 router.delete('/:id', validateUserId, (req, res) => {
@@ -66,6 +76,16 @@ router.post('/:id/posts', validateUserId, (req, res) => {
   // and another middleware to check that the request body is valid
   console.log(req.user)
 });
+
+// Error handling middleware
+// revisit 34:40 solution video
+router.use((err, req, res, next) => {
+  res.status(err.status || 500).json({
+    customMessage: 'something tragic inside posts router happened',
+    message: err.message,
+    stack: err.stack,
+  })
+})
 
 // do not forget to export the router
 module.exports = router;

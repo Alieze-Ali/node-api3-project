@@ -53,11 +53,12 @@ function validateUser(req, res, next) {
   // needs a name var that calls from req.body, then do logic using if/else if name is not there
   // then bring into your user-router
   const { name } = req.body
-  if(!name) {
+  if(!name || !name.trim()) {
     res.status(400).json({
       message: 'missing required name field',
     })
   } else {
+    req.name = name.trim()
     next()
   }
 }
@@ -66,8 +67,17 @@ function validatePost(req, res, next) {
   // DO YOUR MAGIC
   // validates the `body` on a request to create a new post
   // - if the request `body` lacks the required `text` field, respond with status `400` and `{ message: "missing required text field" }`
-  console.log('validatePost middleware')
-  next()
+  // this is the same as above except with text
+  // don't forget to bring it into users-router
+  const { text } = req.body
+  if(!text || !text.trim()) {
+    res.status(400).json({
+      message: 'missing required text field',
+    })
+  } else {
+    req.text = text.trim()
+    next()
+  }
 }
 
 // do not forget to expose these functions to other modules
