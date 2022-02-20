@@ -1,5 +1,9 @@
-// Bring in express & middlewares
+// Bring in express, router & middlewares
 const express = require('express');
+const router = express.Router();
+// you can also do it in one line
+// const router = require('express').Router()
+
 const {
   validateUserId,
   validateUser,
@@ -14,12 +18,11 @@ const Posts = require('../posts/posts-model');
 const middleware = require('../middleware/middleware');
 const res = require('express/lib/response');
 
-const router = express.Router();
-
 
 // routes
 router.get('/', (req, res) => {
   // RETURN AN ARRAY WITH ALL THE USERS
+  // Users.get() creates a promise, the promise returned is the 'users'
   Users.get()
   .then(users => {
     res.status(200).json(users);
@@ -32,6 +35,7 @@ router.get('/', (req, res) => {
   });
 });
 
+
 router.get('/:id', validateUserId, (req, res) => {
   // RETURN THE USER OBJECT
   // this needs a middleware to verify user id
@@ -39,17 +43,20 @@ router.get('/:id', validateUserId, (req, res) => {
   res.json(req.user)
 });
 
+
 router.post('/', validateUser, (req, res, next) => {
   // RETURN THE NEWLY CREATED USER OBJECT
   // this needs a middleware to check that the request body is valid
-  // this is the insert() that adds an object to the db & returns it
+  // this is the insert() that adds an object to the db & returns it, ie creates a new user
   // console.log(req.name)
+  // another example can be found at:https://www.youtube.com/watch?v=z_8onZ3Y4xQ around 56:00
   Users.insert({ name: req.name })
     .then(newUser => {
       res.status(201).json(newUser)
     })
     .catch(next)
 });
+
 
 router.put('/:id', validateUserId, validateUser, (req, res) => {
   // RETURN THE FRESHLY UPDATED USER OBJECT
@@ -68,19 +75,35 @@ router.put('/:id', validateUserId, validateUser, (req, res) => {
   .catch(next)
 });
 
-router.delete('/:id', validateUserId, async (req, res, next) => {
+
+router.delete('/:id', validateUserId, async (req, res) => {
   // RETURN THE FRESHLY DELETED USER OBJECT
   // this needs a middleware to verify user id
   // this is the remove(): it accepts an 'id' as first param & upon deleting the 'resource' from the db, returns the number of deleted records
   // a trip to the db, requires async await
   // console.log(req.user)
+
+  // this is not working for me??? so trying something different
+  // try {
+  //   await Users.remove(req.params.id)
+  //   res.json(req.user)
+  // } catch (err) {
+  //   next(err)
+  // }
+
+  const { id } = req.params;
   try {
-    await User.remove(req.params.id)
-    res.json(req.user)
-  } catch (err) {
-    next(err)
+    const delUser = await Users.remove(id)
+    res.status(200).json(delUser)
+  } catch (error) {
+    console.log(err)
+    res.status(500).json({
+      message: 'Error deleting users'
+    })
   }
+
 });
+
 
 router.get('/:id/posts', validateUserId, async (req, next) => {
   // RETURN THE ARRAY OF USER POSTS
@@ -95,6 +118,7 @@ router.get('/:id/posts', validateUserId, async (req, next) => {
   }
 
 });
+
 
 router.post(
   '/:id/posts', 
@@ -118,6 +142,7 @@ router.post(
     }
 
 });
+
 
 // Error handling middleware
 // revisit 34:40 solution video
