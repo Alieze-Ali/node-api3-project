@@ -9,16 +9,19 @@ module.exports = {
   remove,
 };
 
+// You can use function find()
 function get() {
   return db('users');
 }
 
+// You can use findById
 function getById(id) {
   return db('users')
     .where({ id })
     .first();
 }
 
+// You can use findUserPosts
 function getUserPosts(userId) {
   return db('posts as p')
     .join('users as u', 'u.id', 'p.user_id')
@@ -26,6 +29,9 @@ function getUserPosts(userId) {
     .where('p.user_id', userId);
 }
 
+
+// instead of function insert() you can use function add() for less confusion
+// Note .insert on line 37 is a key word needed, line 32 is not a key word & can be switched, the two are not related or reliant upon each other
 function insert(user) {
   return db('users')
     .insert(user)
